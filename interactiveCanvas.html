@@ -7,7 +7,6 @@
 	var context;
 	var stars = [];
 	var grads = [];
-	var triangles = [];
 	function grad (){
 	var colors = ["red","blue","green"];
 
@@ -21,7 +20,6 @@
 	this.radius2 = Math.floor(Math.random()*250 + 250);
 	
 	}
-	
 	function star(x,y,color){
 	//tip of star to draw from
 	var superNova = superNova;
@@ -159,17 +157,14 @@ function createStar(cx, cy, spikes, outerRadius, innerRadius, color) {
 
 }
 function draw(){
-	context.globalCompositeOperation= "source-over";
-	context.fillStyle = "rgba(0,0,0, 0.7)";
+	context.globalCompositeOperation= "source-over"
+	context.fillStyle = "rgba(0,0,0, 0.02)";
 	context.fillRect(0,0, canvas.width, canvas.height);
-	context.globalCompositeOperation = "lighter";
 	fillBackgroundColor();
 	for (var i = 0; i < stars.length; i++){
 	var s = stars[i];
-	drawTriangle(stars[i]);
 	for (var j = 0; j < stars.length; j++){
 	drawLine(stars[i], stars[j])
-	drawTriangle(stars[i]);
 	}
 	drawStar(stars[i]);
 	if (s.x + s.dx > canvas.width || s.x + s.dx < 0)
@@ -182,7 +177,6 @@ function draw(){
 	//subtract x2-x1, y2-y1, add to coordinate drawTo until same as destination %2 if != 0 divide by 2 to simplify
 	
 	}
-	
 }
 
 function drawLine(starA,starB){
@@ -200,17 +194,6 @@ function drawLine(starA,starB){
 	context.strokeStyle = "white";
 	context.stroke();
 	
-}
-
-function drawTriangle(star){
-	var random = Math.floor(Math.random()*50 - 5)
-	context.beginPath();
-	context.moveTo(star.x,star.y);
-	context.lineTo(star.x + random, star.y - random);
-	context.lineTo(star.x - random, star.y + random);
-	context.closePath();
-	context.fillStyle = "green";
-	context.fill();
 }
 
 function drawRect(x1,y1,x2,y2){
