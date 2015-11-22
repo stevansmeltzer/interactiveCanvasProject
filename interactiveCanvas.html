@@ -1,0 +1,270 @@
+<!doctype HTML>
+<html>
+<head>
+<title>Constellation Creator</title>
+<script>
+	var canvas;
+	var context;
+	var stars = [];
+	var grads = [];
+	var triangles = [];
+	function grad (){
+	var colors = ["red","blue","green"];
+
+	this.startColor = colors[Math.floor(Math.random()*colors.length)];
+	this.endColor = "black"
+	this.x1 = Math.floor(Math.random()*canvas.width);
+	this.x2 = Math.floor(Math.random()*canvas.width);
+	this.y1 = Math.floor(Math.random()*canvas.height);
+	this.y2 = Math.floor(Math.random()*canvas.height);
+	this.radius1 = Math.floor(Math.random()*250);
+	this.radius2 = Math.floor(Math.random()*250 + 250);
+	
+	}
+	
+	function star(x,y,color){
+	//tip of star to draw from
+	var superNova = superNova;
+	var yellowDwarf = yellowDwarf;
+	var whiteDwarf;
+	this.x = x;
+	this.y = y;
+	this.dx = Math.floor(Math.random()*10 - 5);
+	this.dy = Math.floor(Math.random()*10 - 5);
+	this.color = color; 
+	var names1 = ["Carbon", "Nitrogen", "Hydrogen", "Iron", "Neon"];
+	var names2 = ["A","B","C","D","E","F","G","H"];
+	var names3 = ["142", "069", "420", "111", "576"];
+	this.name = (names1[Math.floor(Math.random()*names1.length)])+(names2[Math.floor(Math.random()*names2.length)])+(names3[Math.floor(Math.random()*names3.length)]);
+	
+	if (color == '#ff8533'){
+		this.star = 'superNova';
+		this.size = 15;
+		this.sizeX = 10;
+		this.points = 10;
+		}
+	else if (color == '#ffff99'){
+		this.star = 'yellowDwarf';
+		this.size = 10;
+		this.sizeX = 5;
+		this.points = 5;
+		}
+		else if (color == '#0048b3'){
+		this.star = 'blueGiant';
+		this.size = 17;
+		this.sizeX = 12;
+		this.points = 15;
+		}
+	else{
+		this.type = whiteDwarf;
+		this.size = 8;
+		this.sizeX = 4;
+		this.points = 6;
+		}
+	}
+	
+function init (){
+	canvas = document.getElementById('canvas');
+	context = canvas.getContext('2d');
+	
+	window.addEventListener('resize', resizeCanvas, false);
+	window.addEventListener('orientationchange', resizeCanvas, false);
+	resizeCanvas();
+	
+	canvas.onclick = function(event) {
+			handleClick(event.clientX, event.clientY);
+		};
+		 return setInterval(draw, 50);		 
+}
+function resizeCanvas() {
+        canvas.width = window.innerWidth - 20;
+        canvas.height = window.innerHeight - 20;
+		fillBackgroundColor();
+		for (var i=0; i<stars.length; i++) {
+			drawStar(stars[i]);
+		 }
+    }
+function handleClick(x, y) {
+	var found = false;
+	for (var i = 0; i <stars.lenght; i++){
+	// compare click to star area if less than area splice
+	//reuse equation to find stars near it to connectStar
+	var d;
+	if (d <= 30){
+		stars.splice(i,1);
+		found = true;
+		} 
+	}
+	fillBackgroundColor();
+	if (!found){
+	var red = '#ff8533';
+	var yellow = '#ffff99';
+	var white = "#e5f2ff";
+	var blue = "#0048b3";
+	var colors = [red, yellow, white, blue];
+	var color = colors[Math.floor(Math.random()*colors.length)];
+	stars.push(new star(x,y,color));
+	
+	}
+	for (var i = 0; i<stars.length; i++){
+	drawStar(stars[i]);
+	}
+	
+	
+}
+
+function drawGrad(grad){
+	var g = grad;
+	var grd = context.createRadialGradient(g.x1,g.y1,g.radius1,g.x2,g.y2,g.radius2)
+	grd.addColorStop(0, g.startColor);
+	grd.addColorStop(1, "black");
+	context.globalCompositeOperation = "lighter"
+	context.beginPath();
+	 context.arc(g.x1, g.y1, g.radius2, 0, degreesToRadians(360), true);
+	 context.fillStyle = grd;
+	 context.fill();
+}
+function drawStar(star){
+
+	 createStar(star.x,star.y,star.points,star.size,star.sizeX, star.color);
+	 context.fillTextCircle(star.name,star.x,star.y,star.size, Math.PI/3)
+}
+
+function createStar(cx, cy, spikes, outerRadius, innerRadius, color) {
+    var rot = Math.PI / 2 * 3;
+    var x = cx;
+    var y = cy;
+    var step = Math.PI / spikes;
+
+    context.strokeSyle = "#000";
+    context.beginPath();
+    context.moveTo(cx, cy - outerRadius)
+    for (i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        context.lineTo(x, y)
+        rot += step
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        context.lineTo(x, y)
+        rot += step
+    }
+    context.lineTo(cx, cy - outerRadius)
+    context.closePath();
+    context.strokeStyle= color;
+    context.stroke();
+    context.fillStyle= color;
+    context.fill();
+
+}
+function draw(){
+	context.globalCompositeOperation= "source-over";
+	context.fillStyle = "rgba(0,0,0, 0.7)";
+	context.fillRect(0,0, canvas.width, canvas.height);
+	context.globalCompositeOperation = "lighter";
+	fillBackgroundColor();
+	for (var i = 0; i < stars.length; i++){
+	var s = stars[i];
+	drawTriangle(stars[i]);
+	for (var j = 0; j < stars.length; j++){
+	drawLine(stars[i], stars[j])
+	drawTriangle(stars[i]);
+	}
+	drawStar(stars[i]);
+	if (s.x + s.dx > canvas.width || s.x + s.dx < 0)
+			s.dx = -s.dx;
+		if (s.y + s.dy > canvas.height || s.y + s.dy < 0)
+			s.dy = -s.dy;
+			s.x += s.dx;
+			s.y += s.dy;
+	//connect lines until meeting using drawLine.
+	//subtract x2-x1, y2-y1, add to coordinate drawTo until same as destination %2 if != 0 divide by 2 to simplify
+	
+	}
+	
+}
+
+function drawLine(starA,starB){
+	context.globalCompositeOperation = "source-over"
+	var xa = starA.x;
+	var ya = starA.y;
+	var xb = starB.x;
+	var yb = starB.y;
+	var length = Math.sqrt((xb-xa)^2 + (yb-ya)^2)
+	
+	context.beginPath();
+	context.moveTo(xa,ya);
+	context.lineTo(xb,yb);
+	context.closePath();
+	context.strokeStyle = "white";
+	context.stroke();
+	
+}
+
+function drawTriangle(star){
+	var random = Math.floor(Math.random()*50 - 5)
+	context.beginPath();
+	context.moveTo(star.x,star.y);
+	context.lineTo(star.x + random, star.y - random);
+	context.lineTo(star.x - random, star.y + random);
+	context.closePath();
+	context.fillStyle = "green";
+	context.fill();
+}
+
+function drawRect(x1,y1,x2,y2){
+	context.fillStyle = "white";
+	context.fillRect(x1,y1,x2,y2);
+}
+//function drawLine() Creates lines from stars to connect them. 
+function fillBackgroundColor(){
+	context.fillStyle = 'rgba(0,0,0, 0.5)';
+	context.fillRect(0,0, canvas.width, canvas.height);
+	
+	drawRect(10, canvas.height - 130, 310, canvas.height - 50)
+	
+	context.font = "30px Comic Sans MS";
+	context.fillStyle = "black";
+	context.fillText("Atomic Simulation", 30, canvas.height - 80);
+	
+	for(i = 0; i<5; i++){
+	grads.push(new grad());
+	drawGrad(grads[i]);
+	}
+}
+
+CanvasRenderingContext2D.prototype.fillTextCircle = function(text,x,y,radius,startRotation){
+   var numDegreesPerLetter = 2*Math.PI / text.length;
+   this.save();
+   this.translate(x,y);
+   this.rotate(startRotation);
+
+   for(var i=0;i<text.length;i++){
+      this.save();
+      this.translate(radius, 0);
+      this.translate(10, -10);
+      this.rotate(1)
+      this.translate(-10, 10);          
+	context.fillStyle = "white";
+	context.font =" 10px Arial"
+      this.fillText(text[i],0,0);
+      this.restore();
+      this.rotate(numDegreesPerLetter);
+   }
+   this.restore();
+}
+
+	function degreesToRadians(degrees) {
+		//converts from degrees to radians and returns
+		return (degrees * Math.PI)/180;
+	}
+	
+window.onload = init;
+</script>
+</head>
+
+<body>
+<canvas id='canvas' width=500 height = 500></canvas>
+</body>
+</html>
